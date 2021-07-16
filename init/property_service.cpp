@@ -1093,11 +1093,17 @@ void PropertyInit() {
         LOG(FATAL) << "Failed to load serialized property info file";
     }
 
+    // Weaken property override security during execution of the safety net props
+    weaken_prop_override_security = true;
+
     // Report a valid verified boot chain to make Google SafetyNet integrity
     // checks pass. This needs to be done before parsing the kernel cmdline as
     // these properties are read-only and will be set to invalid values with
     // androidboot cmdline arguments.
     SetSafetyNetProps();
+
+    // Restore the normal property override security after the safety net props are executed
+    weaken_prop_override_security = false;
 
     // If arguments are passed both on the command line and in DT,
     // properties set in DT always have priority over the command-line ones.
